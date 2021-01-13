@@ -17,6 +17,7 @@ namespace pRck
         static void Main(string[] args)
         {
             var Client = new WebClient();
+            var PostsRead = new List<Int64>();
             do
             {
                 var Json = Client.DownloadString("https://a.4cdn.org/hc/catalog.json");
@@ -31,6 +32,7 @@ namespace pRck
                         if (Page.sub.ToLower().Contains("bdsm") || Page.sub.ToLower().Contains("impact") || Page.sub.ToLower().Contains("bruised") || Page.sub.ToLower().Contains("bondage"))
                         {
                             Console.WriteLine("Got Something!");
+                      
                             var Link = $"https://a.4cdn.org/hc/thread/{Page.no}.json";
                             Json = Client.DownloadString(Link);
                             var Posts = JsonConvert.DeserializeObject<RootPost>(Json);
@@ -40,6 +42,15 @@ namespace pRck
                                 var RNJesus = new Random().Next(0, Posts.posts.Count);
                                 if (Posts.posts[RNJesus].tim != null)
                                 {
+                                    if (PostsRead.Contains(Int64.Parse(Posts.posts[RNJesus].tim.ToString())))
+                                {
+                                    Console.WriteLine("Done this post, skipping");
+                                    break;
+                                }
+                                PostsRead.Add(Int64.Parse(Posts.posts[RNJesus].tim.ToString()));
+
+
+                                
                                     // https://i.4cdn.org/[board]/[4chan image ID].[file extension]
                                     Link = $"https://i.4cdn.org/hc/{Posts.posts[RNJesus].tim}{Posts.posts[RNJesus].ext}";
                                     using (var ms = new MemoryStream(new WebClient().DownloadData(Link)))
